@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include "libRelation.h"
 #include "relation.h"
+#include "misc.h"
 
 #define DEXC(stmt) if (stmt) PyErr_Print()
 
@@ -61,6 +62,8 @@ py_find(__attribute__((unused))PyObject* self, PyObject* args) {
     unsigned int i, j;
     char ***pppCells = NULL;
     struct relation_datamodel* dm = NULL;
+
+	UNUSED(self);
 
     /* Parse arguments */
     if ((pListCells = PyTuple_GetItem(args, 0)) == NULL) {

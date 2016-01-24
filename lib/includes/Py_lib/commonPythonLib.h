@@ -34,7 +34,12 @@
 #include "factory.h"
 
 #define DEFAULT_BID "0000000000"
+#ifdef _WIN32
+#define __STR(x) #x
+#define STR(x) __STR(x)
+#else
 #define STR(x) x
+#endif
 
 //+---------------------------------------------------------------------------+
 //| py_getBID : Returns the unique Binary IDentifier

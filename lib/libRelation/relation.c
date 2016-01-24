@@ -27,8 +27,12 @@
 
 #define _GNU_SOURCE
 
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dirent.h>
 #include <dlfcn.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,6 +93,89 @@ append_algo_matches(struct relation_datamodel** dm,
  * Build a list of libRelation algorithm.
  * This structure contains a handle returned by dlopen() of libraries.
  */
+ #ifdef _WIN32
+ struct relation_algorithm_operations_list*
+search_algorithms(void)
+{
+    HANDLE hDir;
+	WIN32_FIND_DATAA findFileData;
+	char pattern[MAX_PATH];
+    HMODULE pLib;
+    char* libPath;
+    int libPathLen;
+    struct relation_algorithm_operations* algo_oper;
+    struct relation_algorithm_operations_list* algo_opers = NULL;
+    struct relation_algorithm_operations_list* algo_opers_prev = NULL;
+
+    DLOG("Searching in %s\n", algorithm_path);
+
+	_snprintf_s(pattern, sizeof(pattern), _TRUNCATE, "%s\\*.dll", algorithm_path);
+
+	hDir = FindFirstFileA(pattern, &findFileData);
+	if(hDir == INVALID_HANDLE_VALUE)
+	{
+		goto end;
+	}
+
+    do
+	{
+		if((findFileData.dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_DEVICE)) != 0)
+		{
+			continue;
+		}
+
+		libPathLen = strlen(algorithm_path) + 1 + strlen(findFileData.cFileName);
+		if (!(libPath = malloc(sizeof(*libPath) * (libPathLen + 1))))
+		{
+			perror("search_algorithms()");
+			break;
+		}
+
+		if (_snprintf_s(libPath, libPathLen + 1, _TRUNCATE, "%s/%s", algorithm_path, findFileData.cFileName) != libPathLen) {
+			fprintf(stderr, "snprintf() failed at %s:%d\n", __FILE__, __LINE__);
+			fprintf(stderr, " %s\n", libPath);
+			free(libPath);
+			break;
+		}
+
+		pLib = LoadLibraryA(libPath);
+		if(pLib == NULL)
+		{
+			DLOG("Skipping '%s'\n", libPath);
+			goto next;
+		}
+
+		algo_oper = (struct relation_algorithm_operations*) GetProcAddress(pLib, "operations");
+		if(algo_oper == NULL)
+		{
+			DLOG("Skipping '%s' (can't find operations symbol)\n", libPath);
+			goto next;
+		}
+
+		DLOG("[%s] Operations loaded\n", libPath);
+
+		if (!(algo_opers = malloc(sizeof(*algo_opers))))
+			goto next;
+
+		algo_opers->next = algo_opers_prev;
+		algo_opers->pHandle = pLib;
+		memcpy(&algo_opers->data, algo_oper, sizeof(*algo_oper));
+		algo_opers_prev = algo_opers;
+		DLOG("[%s] Algo added\n", algo_opers->data.name);
+
+	next:
+		free(libPath);
+		continue;
+
+    } while(FindNextFile(hDir, &findFileData));
+
+    FindClose(hDir);
+ end:
+    return algo_opers;
+}
+
+#else
+
 struct relation_algorithm_operations_list*
 search_algorithms(void)
 {
@@ -143,6 +230,7 @@ search_algorithms(void)
  end:
     return algo_opers;
 }
+#endif
 
 /*
  * Correctly free a relation_algorithm_operations_list recursively.
@@ -155,7 +243,13 @@ clean_algo(struct relation_algorithm_operations_list* algo)
 
     while (cur) {
         if (cur->pHandle)
+		{
+			#ifdef _WIN32
+			FreeLibrary(cur->pHandle);
+			#else
             dlclose(cur->pHandle);
+			#endif
+		}
         next = cur->next;
         free(cur);
         cur = next;

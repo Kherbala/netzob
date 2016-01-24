@@ -78,28 +78,60 @@ if NETZOB_COMPILE_PROFILE_ENV in os.environ.keys():
     compileProfile = os.environ[NETZOB_COMPILE_PROFILE_ENV]
 
 # Default compile arguments
-extraCompileArgs = ["-std=c99"]
+if sys.platform =='win32':
+    extraCompileArgs = []
+    extraLinkerArgs = []
+    extraLibsArgs = []
+else:
+    extraCompileArgs = ["-std=c99"]
+    extraLinkerArgs = []
+    extraLibsArgs = ["dl"]
+
 if "no-verify" not in compileProfile:
-    extraCompileArgs.extend([
-        "-Wall",                # gcc says: "Enable most warning messages"
-        "-Wextra",              # gcc says: "Print extra (possibly unwanted) warnings"
-        "-Wunused",             # gcc says: "Enable all -Wunused- warnings"
-        "-Wsign-compare",       # gcc says: "Warn about signed-unsigned comparisons"
-        "-Wstrict-prototypes",  # gcc says: "Warn about unprototyped function declarations"
-        "-Wuninitialized",      # gcc says: "Warn about uninitialized automatic variables"
-        "-Wshadow",             # gcc says: "Warn when one local variable shadows another"
-        "-Wpointer-arith"])     # gcc says: "Warn about function pointer arithmetic"
+    if sys.platform =='win32':
+        extraCompileArgs.extend([
+            "/Wall",    # "Enable all warnings"
+            "/W3",      # "Warning level 3"
+            ])
+    else:
+        extraCompileArgs.extend([
+            "-Wall",                # gcc says: "Enable most warning messages"
+            "-Wextra",              # gcc says: "Print extra (possibly unwanted) warnings"
+            "-Wunused",             # gcc says: "Enable all -Wunused- warnings"
+            "-Wsign-compare",       # gcc says: "Warn about signed-unsigned comparisons"
+            "-Wstrict-prototypes",  # gcc says: "Warn about unprototyped function declarations"
+            "-Wuninitialized",      # gcc says: "Warn about uninitialized automatic variables"
+            "-Wshadow",             # gcc says: "Warn when one local variable shadows another"
+            "-Wpointer-arith"])     # gcc says: "Warn about function pointer arithmetic"
 
 if "devel" in compileProfile:
-    extraCompileArgs.extend([
-        "-O0",                  # gcc says: "Optimization level 0"
-        "-Werror",              # gcc says: "Error out the compiler on warnings"
-        "-pedantic-errors",     # gcc says: "Issue errors "needed for strict compliance to the standard"
-        "-g"])                  # gcc says: "Generate debug information in default format"
+    if sys.platform =='win32':
+        extraCompileArgs.extend([
+            "/Od",    # "Disable optimization"
+            "/WX",    # "All warnings are errors"
+            "/Zi",    # "Enable debug information"  
+        ])
+        
+        extraLinkerArgs.extend([
+            "/DEBUG"    # "Enable debug information"
+        ])
+
+    else:
+        extraCompileArgs.extend([
+            "-O0",                  # gcc says: "Optimization level 0"
+            "-Werror",              # gcc says: "Error out the compiler on warnings"
+            "-pedantic-errors",     # gcc says: "Issue errors "needed for strict compliance to the standard"
+            "-g"])                  # gcc says: "Generate debug information in default format"
 
 elif "release" in compileProfile:
-    extraCompileArgs.extend([
-        "-O2"])                 # gcc says: "Optimization level 2"
+    if sys.platform =='win32':
+        extraCompileArgs.extend([
+            "/O2",      # "Increase speed"
+            "/Ot",      # "Privilegiate speed"
+        ])
+    else:
+        extraCompileArgs.extend([
+            "-O2"])                 # gcc says: "Optimization level 2"
 
 # +----------------------------------------------------------------------------
 # | Definition of the extensions
@@ -139,6 +171,7 @@ macros = [('BID', '"{0}"'.format(str(uuid.uuid4())))]
 # Module Needleman
 moduleLibNeedleman = Extension('netzob._libNeedleman',
                                extra_compile_args=extraCompileArgs,
+                               extra_link_args=extraLinkerArgs,
                                sources=[opj(interfacePath, "Interface.c"),
                                         opj(pyInterfacePath, "libInterface.c"),
                                         opj(pyNeedlemanPath, "libNeedleman.c"),
@@ -147,11 +180,13 @@ moduleLibNeedleman = Extension('netzob._libNeedleman',
                                         opj(argsFactoriesPath, "factory.c"),
                                         opj(toolsPath, "getBID.c")],
                                define_macros=macros,
-                               include_dirs=includes)
+                               include_dirs=includes,
+                               libraries=extraLibsArgs)
 
 # Module ScoreComputation
 moduleLibScoreComputation = Extension('netzob._libScoreComputation',
                                       extra_compile_args=extraCompileArgs,
+                                      extra_link_args=extraLinkerArgs,
                                       sources=[opj(needlemanPath, "scoreComputation.c"),
                                                opj(pyNeedlemanPath, "libScoreComputation.c"),
                                                opj(needlemanPath, "Needleman.c"),
@@ -160,25 +195,29 @@ moduleLibScoreComputation = Extension('netzob._libScoreComputation',
                                                opj(argsFactoriesPath, "factory.c"),
                                                opj(toolsPath, "getBID.c")],
                                       define_macros=macros,
-                                      include_dirs=includes)
+                                      include_dirs=includes,
+                                      libraries=extraLibsArgs)
 
 # Module Interface
 moduleLibInterface = Extension('netzob._libInterface',
                                extra_compile_args=extraCompileArgs,
+                               extra_link_args=extraLinkerArgs,
                                sources=[opj(interfacePath, "Interface.c"),
                                         opj(pyInterfacePath, "libInterface.c"),
                                         opj(toolsPath, "getBID.c")],
                                define_macros=macros,
-                               include_dirs=includes)
+                               include_dirs=includes,
+                              libraries=extraLibsArgs)
 
 # Module Relation
 moduleLibRelation = Extension('netzob._libRelation',
                               extra_compile_args=extraCompileArgs,
+                              extra_link_args=extraLinkerArgs,
                               sources=[os.path.join(relPath, "relation.c"),
                                        os.path.join(pyRelPath, "libRelation.c")],
                               define_macros=macros,
                               include_dirs=includes,
-                              libraries=["dl"])
+                              libraries=extraLibsArgs)
 
 # +----------------------------------------------------------------------------
 # | Definition of the dependencies

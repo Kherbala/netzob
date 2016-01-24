@@ -32,6 +32,7 @@
 //| Import Associated Header
 //+---------------------------------------------------------------------------+
 #include "libScoreComputation.h"
+#include "misc.h"
 #ifdef _WIN32
 #include <stdio.h>
 #include <malloc.h>
@@ -70,6 +71,7 @@ PyObject* py_computeSimilarityMatrix(__attribute__((unused))PyObject* self, PyOb
   t_message *mesmessages;
   long nbmessage = 0;
 
+  UNUSED(self);
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hOOhO", &doInternalSlick, &temp_cb, &temp2_cb, &debugMode,&wrapperFactory)) {

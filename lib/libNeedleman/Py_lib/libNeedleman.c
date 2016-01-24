@@ -32,6 +32,7 @@
 //| Import Associated Header
 //+---------------------------------------------------------------------------+
 #include "libNeedleman.h"
+#include "misc.h"
 #include <time.h>
 #ifdef _WIN32
 #include <stdio.h>
@@ -74,6 +75,8 @@ PyObject* py_alignMessages(__attribute__((unused))PyObject* self, PyObject* args
   Bool bool_doInternalSlick;
   int parseRet;
   t_score score;
+
+  UNUSED(self);
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hOhO", &doInternalSlick, &temp_cb, &debugMode, &wrapperFactory)) {
@@ -151,7 +154,6 @@ PyObject* py_alignMessages(__attribute__((unused))PyObject* self, PyObject* args
   return serializeMessage(resMessage);
 }
 
-
 //+---------------------------------------------------------------------------+
 //| py_alignTwoMessages : Python wrapper for alignTwoMessages
 //+---------------------------------------------------------------------------+
@@ -175,6 +177,8 @@ PyObject* py_alignTwoMessages(__attribute__((unused))PyObject* self, PyObject* a
   t_group group;
   Bool bool_doInternalSlick;
   Bool bool_debugMode;
+
+  UNUSED(self);
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hs#s#h", &doInternalSlick, &format, &sizeFormat, &serialMessages, &sizeSerialMessages, &debugMode)) {
@@ -269,4 +273,3 @@ PyObject* py_alignTwoMessages(__attribute__((unused))PyObject* self, PyObject* a
   // Return the result
   return serializeMessage(&resMessage);
 }
-

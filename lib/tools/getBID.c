@@ -25,17 +25,22 @@
 //|             Supélec, http://www.rennes.supelec.fr/ren/rd/cidre/           |
 //+---------------------------------------------------------------------------+
 #include "commonPythonLib.h"
+#include "misc.h"
 
 //+---------------------------------------------------------------------------+
 //| py_getBID : Returns the unique Binary IDentifier
 //+---------------------------------------------------------------------------+
 PyObject * py_getBID(__attribute__((unused))PyObject* self, __attribute__((unused))PyObject *noarg) {
 	char str_bid[37];
+
+	UNUSED(self);
+	UNUSED(noarg);
+
 	#ifdef BID
-		strncpy(str_bid,STR(BID), sizeof str_bid - 1);
+		strncpy(str_bid, STR(BID), sizeof(str_bid) - 1);
 	#else
 		printf("The macro which established the BID has not been defined when compiling the lib, default one will be returned.\n");
-		strncpy(str_bid, STR(DEFAULT_BID), sizeof str_bid - 1);
+		strncpy(str_bid, STR(DEFAULT_BID), sizeof(str_bid) - 1);
 	#endif
 	str_bid[sizeof str_bid -1]='\0';
 	return Py_BuildValue("s", str_bid);

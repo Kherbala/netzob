@@ -32,6 +32,7 @@
 //| Import Associated Header
 //+---------------------------------------------------------------------------+
 #include "libInterface.h"
+#include "misc.h"
 #ifdef _WIN32
 #include <stdio.h>
 #include <malloc.h>
@@ -128,6 +129,8 @@ PyObject* py_deserializeMessages(__attribute__((unused))PyObject* self, PyObject
   t_group group_result;
   // Converts the arguments
 
+  UNUSED(self);
+
   if (!PyArg_ParseTuple(args, "hss#h", &nbMessages, &format, &sizeFormat, &serialMessages, &sizeSerialMessages, &debugMode)) {
     printf("Error while parsing the arguments provided to py_deserializeMessages\n");
     return NULL;
@@ -159,9 +162,6 @@ PyObject* py_deserializeMessages(__attribute__((unused))PyObject* self, PyObject
   return Py_BuildValue("i", nbDeserializedMessage);
 }
 
-
-
-
 //+---------------------------------------------------------------------------+
 //| py_deserializeGroups : Python wrapper for deserializeGroups
 //+---------------------------------------------------------------------------+
@@ -175,6 +175,8 @@ PyObject* py_deserializeGroups(__attribute__((unused))PyObject* self, PyObject* 
   unsigned int nbDeserializedGroup = 0;
   t_groups groups_result;
 
+  UNUSED(self);
+
   // Get the number of group (need python>=2.5)
   if(PyObject_Size(args) == -1) {
     printf("The argument has no length");
@@ -183,7 +185,6 @@ PyObject* py_deserializeGroups(__attribute__((unused))PyObject* self, PyObject* 
   else {
     nbGroups = (unsigned int) PyObject_Size(args);
   }
-
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hss#h", &nbGroups, &format, &sizeFormat, &serialGroups, &sizeSerialGroups, &debugMode)) {
@@ -223,9 +224,9 @@ PyObject* py_deserializeGroups(__attribute__((unused))PyObject* self, PyObject* 
 *
 *********************************************************************/
 PyObject * py_deserializeSymbols(__attribute__((unused))PyObject* self, PyObject* args) {
-
-     deserializeSymbols(args,0);
-     return Py_BuildValue("i", 1);
+	UNUSED(self);
+	deserializeSymbols(args,0);
+	return Py_BuildValue("i", 1);
 }
 unsigned int deserializeSymbols(PyObject *args, Bool debugMode) {
   PyObject *symbols = PyTuple_GetItem(args, 0);
@@ -276,8 +277,6 @@ unsigned int deserializeSymbols(PyObject *args, Bool debugMode) {
 	printf("END SCORE\n");
       }
 
-
-
       /* Decrease the ref at the end of the loop*/
       if (i_group == nbGroups-1) {
        if(current_position != NULL)
@@ -293,9 +292,5 @@ unsigned int deserializeSymbols(PyObject *args, Bool debugMode) {
     printf("End of else\n");
   }
 
-
   return 1;
 }
-
-
-
