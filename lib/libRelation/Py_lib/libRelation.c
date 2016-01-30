@@ -99,10 +99,15 @@ py_find(DECLUNUSED PyObject* self, PyObject* args) {
         for (j = 0; j < cells_vlen; j++) {
             /* Get, check and copy cells */
             pCell = PySequence_GetItem(pCells, j);
-            if (!PyString_Check(pCell))
+            if (!PyString_Check(pCell)) {
                 goto end2;
-            if ((pppCells[i][j] = malloc(PyString_Size(pCell) * sizeof(**pppCells))) == NULL)
+			}
+			
+			Py_ssize_t szCell = PyString_Size(pCell);
+			pppCells[i][j] = malloc(szCell * sizeof(**pppCells));
+            if (pppCells[i][j] == NULL) {
                 goto end2;
+			}
 			
 			STRCPY(pppCells[i][j], szCell * sizeof(**pppCells), PyString_AsString(pCell));
         }
@@ -140,15 +145,21 @@ create_python_dm(struct relation_datamodel* dm)
     PyObject* pRels;
     PyObject* pRelConfig;
 
-    if (!(pDm = PyDict_New()))
+	pDm = PyDict_New();
+    if (pDm == NULL) {
         goto error;
+	}
     while (dm_it) {
         pAlgoName = PyString_FromString(dm_it->algo_name);
 
         /* Amend/append a algo/match node */
-        if (!(pRefs = PyDict_GetItem(pDm, pAlgoName)))
-            if (!(pRefs = PyList_New(0)))
+		pRefs = PyDict_GetItem(pDm, pAlgoName);
+        if (pRefs == NULL) {
+			pRefs = PyList_New(0);
+            if (pRefs == NULL) {
                 goto error;
+			}
+		}
 
         matches = dm_it->matches;
         while (matches != NULL) {

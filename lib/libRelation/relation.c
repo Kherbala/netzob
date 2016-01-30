@@ -57,7 +57,7 @@ relation_find(struct relation_datamodel** dm,
         DLOG("ALGO %s\n", algo_opers->data.name);
         for (i = 0; i < vlen; i++) {
             for (j = 0; j < hlen; j++) {
-	      DLOG("-- idx = %d\n", j);
+				DLOG("-- idx = %d\n", j);
                 matches = algo_opers->data.find(data, i, j, vlen, hlen);
                 if (matches != NULL)
                     append_algo_matches(dm, algo_opers, matches);
@@ -80,8 +80,11 @@ append_algo_matches(struct relation_datamodel** dm,
 {
     struct relation_datamodel* new;
 
-    if (!(new = malloc(sizeof(*new))))
+	new = malloc(sizeof(*new));
+    if (new == NULL) {
         return NULL;
+	}
+	
     new->next = *dm;
     new->matches = matches;
     new->algo_name = opers->data.name;
@@ -125,7 +128,8 @@ search_algorithms(void)
 		}
 
 		libPathLen = strlen(algorithm_path) + 1 + strlen(findFileData.cFileName);
-		if (!(libPath = malloc(sizeof(*libPath) * (libPathLen + 1))))
+		libPath = malloc(sizeof(*libPath) * (libPathLen + 1));
+		if (libPath == NULL)
 		{
 			perror("search_algorithms()");
 			break;
@@ -154,8 +158,11 @@ search_algorithms(void)
 
 		DLOG("[%s] Operations loaded\n", libPath);
 
-		if (!(algo_opers = malloc(sizeof(*algo_opers))))
+		algo_opers = malloc(sizeof(*algo_opers));
+		if (algo_opers == NULL)
+		{
 			goto next;
+		}
 
 		algo_opers->next = algo_opers_prev;
 		algo_opers->pHandle = pLib;
@@ -194,7 +201,9 @@ search_algorithms(void)
     while ((entry = readdir(pDir)) != NULL) {
         if (strstr(entry->d_name, ".so") != NULL) {
             libPathLen = strlen(algorithm_path) + 1 + strlen(entry->d_name);
-            if (!(libPath = malloc(sizeof(*libPath) * (libPathLen + 1)))) {
+			
+			libPath = malloc(sizeof(*libPath) * (libPathLen + 1));
+			if (libPath == NULL) {
                 perror("search_algorithms()");
                 goto end;
             }
@@ -213,7 +222,8 @@ search_algorithms(void)
             if (dlerror() != NULL)
                 goto next;
             DLOG("[%s] Operations loaded\n", libPath);
-            if (!(algo_opers = malloc(sizeof(*algo_opers))))
+			algo_opers = malloc(sizeof(*algo_opers));
+            if (algo_opers == NULL)
                 goto next;
             algo_opers->next = algo_opers_prev;
             algo_opers->pHandle = pLib;

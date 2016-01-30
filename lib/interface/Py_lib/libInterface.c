@@ -106,13 +106,11 @@ int callbackStatus(int stage, double percent, char* message, ...) {
 		  return -1;
 		}
 		Py_DECREF(result_cb);
-		return 1;
 	}
 	else {
 		printf("[%f] %s\n", percent, buffer);
-		return 1;
 	}
-	return 0;
+	return 1;
 }
 
 //+---------------------------------------------------------------------------+
