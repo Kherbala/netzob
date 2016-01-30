@@ -118,7 +118,7 @@ int callbackStatus(int stage, double percent, char* message, ...) {
 //+---------------------------------------------------------------------------+
 //| py_deserializeMessages : Python wrapper for deserializeMessages
 //+---------------------------------------------------------------------------+
-PyObject* py_deserializeMessages(__attribute__((unused))PyObject* self, PyObject* args) {
+PyObject* py_deserializeMessages(DECLUNUSED PyObject* self, PyObject* args) {
   unsigned int nbMessages = (unsigned int) PyObject_Size(args);
   char *format;
   int sizeFormat;
@@ -128,8 +128,6 @@ PyObject* py_deserializeMessages(__attribute__((unused))PyObject* self, PyObject
   unsigned int nbDeserializedMessage = 0;
   t_group group_result;
   // Converts the arguments
-
-  UNUSED(self);
 
   if (!PyArg_ParseTuple(args, "hss#h", &nbMessages, &format, &sizeFormat, &serialMessages, &sizeSerialMessages, &debugMode)) {
     printf("Error while parsing the arguments provided to py_deserializeMessages\n");
@@ -165,7 +163,7 @@ PyObject* py_deserializeMessages(__attribute__((unused))PyObject* self, PyObject
 //+---------------------------------------------------------------------------+
 //| py_deserializeGroups : Python wrapper for deserializeGroups
 //+---------------------------------------------------------------------------+
-PyObject* py_deserializeGroups(__attribute__((unused))PyObject* self, PyObject* args) {
+PyObject* py_deserializeGroups(DECLUNUSED PyObject* self, PyObject* args) {
   unsigned int nbGroups = 0;
   char *format;
   int sizeFormat;
@@ -174,8 +172,6 @@ PyObject* py_deserializeGroups(__attribute__((unused))PyObject* self, PyObject* 
   unsigned int debugMode = 0;
   unsigned int nbDeserializedGroup = 0;
   t_groups groups_result;
-
-  UNUSED(self);
 
   // Get the number of group (need python>=2.5)
   if(PyObject_Size(args) == -1) {
@@ -223,8 +219,7 @@ PyObject* py_deserializeGroups(__attribute__((unused))PyObject* self, PyObject* 
 *         push list of symbols in the groups
 *
 *********************************************************************/
-PyObject * py_deserializeSymbols(__attribute__((unused))PyObject* self, PyObject* args) {
-	UNUSED(self);
+PyObject * py_deserializeSymbols(DECLUNUSED PyObject* self, PyObject* args) {
 	deserializeSymbols(args,0);
 	return Py_BuildValue("i", 1);
 }

@@ -59,7 +59,7 @@ PyMODINIT_FUNC init_libNeedleman(void) {
 //+---------------------------------------------------------------------------+
 //| py_alignSequences : Python wrapper for alignMessages
 //+---------------------------------------------------------------------------+
-PyObject* py_alignMessages(__attribute__((unused))PyObject* self, PyObject* args) {
+PyObject* py_alignMessages(DECLUNUSED PyObject* self, PyObject* args) {
 
   // parameters
   PyObject* wrapperFactory;
@@ -75,8 +75,6 @@ PyObject* py_alignMessages(__attribute__((unused))PyObject* self, PyObject* args
   Bool bool_doInternalSlick;
   int parseRet;
   t_score score;
-
-  UNUSED(self);
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hOhO", &doInternalSlick, &temp_cb, &debugMode, &wrapperFactory)) {
@@ -157,7 +155,7 @@ PyObject* py_alignMessages(__attribute__((unused))PyObject* self, PyObject* args
 //+---------------------------------------------------------------------------+
 //| py_alignTwoMessages : Python wrapper for alignTwoMessages
 //+---------------------------------------------------------------------------+
-PyObject* py_alignTwoMessages(__attribute__((unused))PyObject* self, PyObject* args) {
+PyObject* py_alignTwoMessages(DECLUNUSED PyObject* self, PyObject* args) {
   // Parameters (in order)
   unsigned int doInternalSlick = 0;
   char *format;
@@ -177,8 +175,6 @@ PyObject* py_alignTwoMessages(__attribute__((unused))PyObject* self, PyObject* a
   t_group group;
   Bool bool_doInternalSlick;
   Bool bool_debugMode;
-
-  UNUSED(self);
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hs#s#h", &doInternalSlick, &format, &sizeFormat, &serialMessages, &sizeSerialMessages, &debugMode)) {

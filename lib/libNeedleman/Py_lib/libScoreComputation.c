@@ -58,7 +58,7 @@ PyMODINIT_FUNC init_libScoreComputation(void) {
 //+---------------------------------------------------------------------------+
 //| py_computeSimilarityMatrix : Python wrapper for computeSimilarityMatrix
 //+---------------------------------------------------------------------------+
-PyObject* py_computeSimilarityMatrix(__attribute__((unused))PyObject* self, PyObject* args) {
+PyObject* py_computeSimilarityMatrix(DECLUNUSED PyObject* self, PyObject* args) {
   unsigned int doInternalSlick = 0;
   unsigned int debugMode = 0;
   int i = 0;
@@ -70,8 +70,6 @@ PyObject* py_computeSimilarityMatrix(__attribute__((unused))PyObject* self, PyOb
   float **scoreMatrix = NULL;
   t_message *mesmessages;
   long nbmessage = 0;
-
-  UNUSED(self);
 
   // Converts the arguments
   if (!PyArg_ParseTuple(args, "hOOhO", &doInternalSlick, &temp_cb, &temp2_cb, &debugMode,&wrapperFactory)) {

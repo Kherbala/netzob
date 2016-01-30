@@ -53,7 +53,7 @@ PyMODINIT_FUNC init_libRelation(void) {
  * > [(m0f0, m0f1, ...), (m1f0, m1f1, ...)]
  */
 static PyObject*
-py_find(__attribute__((unused))PyObject* self, PyObject* args) {
+py_find(DECLUNUSED PyObject* self, PyObject* args) {
     PyObject* pListCells;
     PyObject* pCells;
     PyObject* pCell;
@@ -62,8 +62,6 @@ py_find(__attribute__((unused))PyObject* self, PyObject* args) {
     unsigned int i, j;
     char ***pppCells = NULL;
     struct relation_datamodel* dm = NULL;
-
-	UNUSED(self);
 
     /* Parse arguments */
     if ((pListCells = PyTuple_GetItem(args, 0)) == NULL) {
