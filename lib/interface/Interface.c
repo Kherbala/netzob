@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #endif
+#include "misc.h"
 
 #ifdef CCALLFORDEBUG
 //+---------------------------------------------------------------------------+
@@ -251,10 +252,10 @@ unsigned int serializeSemanticTags(char ** serializedTags, t_semanticTag ** tags
     if (tags[iTag]->name != NULL) {
       sizeLocalTag = strlen(tags[iTag]->name);
       if(sizeLocalTag>0){
-	strncat(*serializedTags, tags[iTag]->name, sizeLocalTag);
+		STRNCAT(*serializedTags, sizeSerializedTags * sizeof(char), tags[iTag]->name, sizeLocalTag);
       }
     }
-    strncat(*serializedTags, ";", 1);
+	STRNCAT(*serializedTags, sizeSerializedTags * sizeof(char), ";", 1);
   }
   return sizeSerializedTags;
 }

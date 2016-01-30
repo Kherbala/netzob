@@ -103,7 +103,8 @@ py_find(DECLUNUSED PyObject* self, PyObject* args) {
                 goto end2;
             if ((pppCells[i][j] = malloc(PyString_Size(pCell) * sizeof(**pppCells))) == NULL)
                 goto end2;
-            strcpy(pppCells[i][j], PyString_AsString(pCell));
+			
+			STRCPY(pppCells[i][j], szCell * sizeof(**pppCells), PyString_AsString(pCell));
         }
     }
     relation_find(&dm, (const char***)pppCells, cells_hlen, cells_vlen);

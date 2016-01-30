@@ -38,6 +38,8 @@
 #include <malloc.h>
 #endif
 
+#include "misc.h"
+
 void alignMessages(t_message *resMessage, Bool doInternalSlick, unsigned int nbMessages, t_message * messages, Bool debugMode) {
   // local variable
   unsigned int numberOfOperations = 0;
